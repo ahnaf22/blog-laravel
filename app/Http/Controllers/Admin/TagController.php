@@ -17,8 +17,8 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags= Tag::latest()->get();
-        return view('admin.tag.index',compact('tags'));
+        $tags = Tag::latest()->get();
+        return view('admin.tag.index', compact('tags'));
     }
 
     /**
@@ -28,7 +28,7 @@ class TagController extends Controller
      */
     public function create()
     {
-       return view('admin.tag.create');
+        return view('admin.tag.create');
     }
 
     /**
@@ -39,13 +39,13 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-           'tagname'=> 'required'
+        $this->validate($request, [
+            'tagname' => 'required'
         ]);
 
         $tag = new Tag();
-        $tag->name= $request->tagname;
-        $tag->slug= Str::slug($request->tagname);
+        $tag->name = $request->tagname;
+        $tag->slug = Str::slug($request->tagname);
         $tag->save();
         Toastr::success('Tag saved!', 'success');
         return redirect()->route('admin.tag.index');
@@ -70,7 +70,8 @@ class TagController extends Controller
      */
     public function edit($id)
     {
-        //
+         $tag = Tag::find($id);
+         return view('admin.tag.edit', compact('tag'));
     }
 
     /**
@@ -82,7 +83,16 @@ class TagController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'tagname' => 'required'
+        ]);
+
+        $tag = Tag::find($id);
+        $tag->name = $request->tagname;
+        $tag->slug = Str::slug($request->tagname);
+        $tag->save();
+        Toastr::success('Tag updated!', 'success');
+        return redirect()->route('admin.tag.index');
     }
 
     /**
@@ -93,6 +103,8 @@ class TagController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Tag::find($id)->delete();
+        Toastr::error('Tag deleted successfully!', 'Deleted');
+        return redirect()->route('admin.tag.index');
     }
 }

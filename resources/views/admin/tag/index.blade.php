@@ -33,6 +33,7 @@
                                         <th>Name</th>
                                         <th>Created at</th>
                                         <th>Updated at</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -50,6 +51,14 @@
                                         <td>{{$tag->name}}</td>
                                         <td>{{$tag->created_at}}</td>
                                         <td>{{$tag->updated_at}}</td>
+                                        <td> 
+                                            <a href="{{route('admin.tag.edit',$tag->id)}}" class="btn btn-warning"><i class="material-icons">edit</i></a>
+                                            <button class="btn btn-danger" type="button" onclick="deleteTag({{$tag->id}})"><i class="material-icons">delete</i></button> 
+                                            <form id="delete-form-{{$tag->id}}" action="{{route('admin.tag.destroy',$tag->id)}}" method="POST" style="display: none">
+                                                 @csrf
+                                                 @method('DELETE')
+                                            </form>  
+                                        </td>
                                     </tr>
                                     @endforeach                                   
                                 </tbody>
@@ -78,5 +87,41 @@
 <script src="{{asset('assets/backend/plugins/jquery-datatable/extensions/export/buttons.html5.min.js')}}"></script>
 <script src="{{asset('assets/backend/plugins/jquery-datatable/extensions/export/buttons.print.min.js')}}"></script>
 <script src="{{asset('assets/backend/js/pages/tables/jquery-datatable.js')}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script type="text/javascript">
+    function deleteTag(id)
+    {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+                })
 
+                swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.value) {
+                   event.preventDefault();
+                   document.getElementById('delete-form-'+id).submit();
+                } else if (
+                    /* Read more about handling dismissals below */
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Your data is safe :)',
+                    'error'
+                    )
+                }
+                })
+    }
+</script>
 @endpush
